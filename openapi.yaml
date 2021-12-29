@@ -1,0 +1,19 @@
+openapi: "3.0.3"
+info:
+  title: swagger sample
+  version: "1.0"
+servers:
+  - url: http://localhost:3000
+paths:
+  '/health':
+    get:
+     summary: health check
+     responses:
+       '200':
+        description: healty
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: server is healthy
+
