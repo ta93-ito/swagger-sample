@@ -1,0 +1,20 @@
+version: '3'
+services:
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: "swagger-ui"
+    ports:
+      - "8001:8080"
+    volumes:
+      -  "./openapi.yaml:/openapi.yaml"
+    environment:
+      SWAGGER_JSON: /openapi.yaml
+
+  api:
+    tty: true
+    build: .
+    container_name: "api"
+    volumes:
+      - "./api:/usr/api"
+    ports:
+      - "3000:3000"
