@@ -17,3 +17,103 @@ paths:
               type: string
               example: server is healthy
 
+  '/todo':
+    post:
+      summary: post todo
+      requestBody:
+          description: todo params
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/POSTTODORequest"
+                required:
+                  - subject
+      responses:
+        '200':
+          description: return a created document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TODOResponse"
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TODOsResponse"
+        '500':
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TODOsResponse"
+
+  '/todos':
+    get:
+      summary: get all todos
+      responses:
+        '200':
+          description: return all todos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TODOsResponse"
+        '500':
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TODOsResponse"
+
+components:
+  schemas:
+    TODO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        subject:
+          type: string
+        subscription:
+          type: string
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+    POSTTODORequest:
+      type: object
+      properties:
+        subject:
+          type: string
+        subscription:
+          type: string
+    TODOResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        subject:
+          type: string
+        subscription:
+          type: string
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+    TODOsResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/TODOResponse"
+    StandardError:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
