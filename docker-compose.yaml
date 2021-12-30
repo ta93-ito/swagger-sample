@@ -4,7 +4,9 @@ services:
     image: swaggerapi/swagger-ui
     container_name: "swagger-ui"
     ports:
-      - "8001:8080"
+      - "8000:8080"
+    depends_on:
+      - api
     volumes:
       -  "./openapi.yaml:/openapi.yaml"
     environment:
@@ -13,8 +15,24 @@ services:
   api:
     tty: true
     build: .
-    container_name: "api"
     volumes:
       - "./api:/usr/api"
     ports:
       - "3000:3000"
+    depends_on:
+      - mysql
+
+  mysql:
+    platform: linux/x86_64
+    image: mysql
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d
+      - db-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      TZ: 'Asia/Tokyo'
+
+volumes:
+  db-data:
+    driver: local
