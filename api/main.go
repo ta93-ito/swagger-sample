@@ -3,11 +3,15 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/ta93-ito/golang-swagger-sample/api/handler"
 )
 
 func main() {
-	http.HandleFunc("/health", Health)
-	http.ListenAndServe(":3000", nil)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/health", Health)
+	mux.HandleFunc("/todo", handler.POSTTODO)
+	http.ListenAndServe(":3000", mux)
 }
 
 func Health(w http.ResponseWriter, r *http.Request) {
