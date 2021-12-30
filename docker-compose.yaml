@@ -13,12 +13,15 @@ services:
       SWAGGER_JSON: /openapi.yaml
 
   api:
-    tty: true
-    build: .
+    build:
+      context: .
+      target: dev
+    command: /bin/air
     volumes:
-      - "./api:/usr/api"
+      - ".:/go/src"
     ports:
       - "3000:3000"
+    tty: true
     depends_on:
       - mysql
 
