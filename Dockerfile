@@ -2,7 +2,9 @@ FROM golang:1.16.5 as builder
 
 WORKDIR /go/src
 
-COPY ${PWD} /go/src
+ADD . /go/src
+
+RUN go mod download
 
 ARG CGO_ENABLED=0
 ARG GOOS=linux
