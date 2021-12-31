@@ -40,13 +40,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TODOsResponse"
+                $ref: "#/components/schemas/StandardError"
+        '405':
+          description: method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StandardError"
         '500':
           description: internal server error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TODOsResponse"
+                $ref: "#/components/schemas/StandardError"
 
   '/todos':
     get:
@@ -63,7 +69,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TODOsResponse"
+                $ref: "#/components/schemas/StandardError"
 
 components:
   schemas:

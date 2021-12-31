@@ -11,6 +11,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", Health)
 	mux.HandleFunc("/todo", handler.POSTTODO)
+	mux.HandleFunc("/todos", handler.GETAllTODOs)
 	http.ListenAndServe(":3000", mux)
 }
 

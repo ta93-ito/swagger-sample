@@ -27,6 +27,7 @@ type TODOResponse struct {
 }
 
 const (
+	selectAll  = `SELECT * FROM todos`
 	selectByID = `SELECT * FROM todos WHERE id = ?`
 	insert     = `INSERT INTO todos(subject, description) VALUES(?,?)`
 )
@@ -36,6 +37,10 @@ func POSTTODO(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 
+	if r.Method != "POST" {
+		http.Error(w, fmt.Errorf("method not allowed").Error(), http.StatusMethodNotAllowed)
+		return
+	}
 	var req POSTTODORequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -62,8 +67,37 @@ func POSTTODO(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	res := &TODOResponse{TODO: todo}
-	err = json.NewEncoder(w).Encode(res)
-	if err != nil {
+	if err = json.NewEncoder(w).Encode(res); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+func GETAllTODOs(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+
+	if r.Method != "GET" {
+		http.Error(w, fmt.Errorf("method not allowed").Error(), http.StatusMethodNotAllowed)
+		return
+	}
+	rows, err := db.DB.Query(selectAll)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	var todos []*TODO
+	for rows.Next() {
+		todo := new(TODO)
+		if err := rows.Scan(&todo.ID, &todo.Subject, &todo.Description, &todo.CreatedAt, &todo.UpdatedAt); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		todos = append(todos, todo)
+	}
+	res := todos
+	if err := json.NewEncoder(w).Encode(res); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
