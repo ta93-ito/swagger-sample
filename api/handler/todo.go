@@ -26,6 +26,9 @@ type TODOResponse struct {
 	*TODO
 }
 
+type TODOs []TODO
+type TODOsResponse TODOs
+
 const (
 	selectAll  = `SELECT * FROM todos`
 	selectByID = `SELECT * FROM todos WHERE id = ?`
@@ -86,16 +89,16 @@ func GETAllTODOs(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	var todos []*TODO
+	var todos []TODO
 	for rows.Next() {
 		todo := new(TODO)
 		if err := rows.Scan(&todo.ID, &todo.Subject, &todo.Description, &todo.CreatedAt, &todo.UpdatedAt); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		todos = append(todos, todo)
+		todos = append(todos, *todo)
 	}
-	res := todos
+	var res TODOsResponse = todos
 	if err := json.NewEncoder(w).Encode(res); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
