@@ -2,20 +2,17 @@ package handler
 
 import (
 	"net/http"
-	"net/http/httptest"
 	"testing"
+
+	"github.com/ta93-ito/golang-swagger-sample/api/helper"
 )
 
 func TestHealth(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "localhost:3000/health", nil)
-	res := httptest.NewRecorder()
-
-	Health(res, req)
-	if res.Code != http.StatusOK {
-		t.Errorf("want 200, but got %d", res.Code)
+	req, err := http.NewRequest(http.MethodGet, "/health", nil)
+	if err != nil {
+		t.Error(err.Error())
 	}
-	wantBody := "server is healthy!"
-	if str := res.Body.String(); str != wantBody {
-		t.Errorf("want is %s, but got %s", wantBody, str)
+	if err := helper.SpecTest(req); err != nil {
+		t.Error(err.Error())
 	}
 }
