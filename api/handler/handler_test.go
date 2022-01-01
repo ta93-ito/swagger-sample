@@ -12,7 +12,5 @@ func TestHealth(t *testing.T) {
 	if err != nil {
 		t.Error(err.Error())
 	}
-	if err := helper.SpecTest(req); err != nil {
-		t.Error(err.Error())
-	}
+	helper.SpecTest(t, req)
 }
