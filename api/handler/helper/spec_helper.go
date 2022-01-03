@@ -2,7 +2,9 @@ package helper
 
 import (
 	"context"
+	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -10,7 +12,7 @@ import (
 	"github.com/getkin/kin-openapi/routers/gorillamux"
 )
 
-func SpecTest(t *testing.T, req *http.Request) {
+func SpecTest(t *testing.T, req *http.Request, handler func(http.ResponseWriter, *http.Request)) {
 	t.Helper()
 
 	ctx := context.Background()
@@ -39,17 +41,16 @@ func SpecTest(t *testing.T, req *http.Request) {
 
 	req.URL.Scheme = "http"
 	req.URL.Host = "localhost:3000"
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		t.Error(err.Error())
-	}
-	defer res.Body.Close()
 
+	res := httptest.NewRecorder()
+	handler(res, req)
+
+	resReadCloser := ioutil.NopCloser(res.Body)
 	responseValidationInput := &openapi3filter.ResponseValidationInput{
 		RequestValidationInput: requestValidationInput,
-		Status:                 res.StatusCode,
-		Header:                 res.Header,
-		Body:                   res.Body,
+		Status:                 res.Code,
+		Header:                 res.Header(),
+		Body:                   resReadCloser,
 	}
 	if err := openapi3filter.ValidateResponse(ctx, responseValidationInput); err != nil {
 		t.Error(err.Error())
